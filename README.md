@@ -1,5 +1,5 @@
-## lsConvert 
-# Converts a list of files from a directory or a text file to a chosen format
+# lsConvert 
+## Converts a list of files from a directory or a text file to a chosen format
 
 usage: ./lsConv [-f | --file <path>] [-d | --directory <path>] 
 		[-r | --recursive] [-re | --regex] [-js | --json]

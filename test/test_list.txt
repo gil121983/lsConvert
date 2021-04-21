@@ -1,0 +1,3 @@
+testfile_*.txt
+testfile-00.txt
+testfile-nn.txt

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TMPFILE="fnConv.tmp"
+TMPFILE="tmp_list.tmp"
 POS=()
 
 while [[ $# -gt 0  ]] 
@@ -53,26 +53,28 @@ function check_cmd_params(){
 
 if [[ $HELP ]]; then print_help; fi
 
+## Initialize
+check_cmd_params ${INPUT_FILE}
+if [ -f $TMPFILE ];then touch ${TMPFILE}; else echo "">$TMPFILE; fi
+fnList=$(< ${INPUT_FILE})
+echo "$fnList" > $TMPFILE
+
 
 if [[ $REGEX ]]; then
-	check_cmd_params ${INPUT_FILE}
-	if [ -f $TMPFILE ];then touch ${TMPFILE}; else echo "">$TMPFILE; fi
-	fnList=$(< ${INPUT_FILE})
-	echo "$fnList" | awk 'NR > 1' > $TMPFILE 
 	sed -i -e 's/^/\|/' $TMPFILE
 	sed -i -e '1s/^.//' $TMPFILE
-	sed -i -e "s/[\!\@\#\$\%\^\&\(\)\-\/\|\.]/\\\&/g" $TMPFILE
+	sed -i -e "s/[\!\@\#\$\%\^\&\(\)-\/\|\.]/\\\&/g" $TMPFILE
 	sed -i -e "s/\*/.*/" $TMPFILE
-
 	output=$(cat $TMPFILE)
 	output="${output//$'\n'/}"
 fi
 
 
 if [[ $JSON ]]; then
-	echo "under construction"
-	exit
-
+	output='{"files_list": ['
+	while read fn; do output+="\"${fn}\",";	done <$TMPFILE
+	output=${output::-1}	
+	output+=']}'
 fi
 
 
@@ -86,4 +88,5 @@ else
 	printf "${output}\n"
 fi
 
+rm $TMPFILE
 #EOF

@@ -1,6 +1,13 @@
 #!/bin/bash
 
+#	lsConv - Files Lists Converter
+#
+#	Author: Gil Stolar
+#       OUR ORIGINAL CODE THAT WAS WRITTEN BY THE SECOPX LTD TEAM IS RELEASED UNDER GPL3!        
+#       Copyright (C) 2021 Gil Stolar
+
 VERSION="1.0"
+
 TMPFILE="tmp_list1.tmp"
 TMPFILE2="tmp_list2.tmp"
 POS=()

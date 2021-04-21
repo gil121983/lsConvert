@@ -1,6 +1,7 @@
 #!/bin/bash
 
-TMPFILE="tmp_list.tmp"
+TMPFILE="tmp_list1.tmp"
+TMPFILE2="tmp_list2.tmp"
 POS=()
 
 while [[ $# -gt 0  ]] 
@@ -9,14 +10,24 @@ opt="$1"
 case $opt in
 	-re|--regex)
 		REGEX=1
-		INPUT_FILE="$2"
-		shift
 		shift
 		;;
 	-js|--json)
 		JSON=1
-		INPUT_FILE="$2"
 		shift
+		;;
+	-f|--file)
+		INPUT_FILE="$2"
+                shift
+                shift
+                ;;
+	-d|--directory)
+		DIRECTORY="$2"
+		shift
+                shift
+                ;;
+	-r|--recursive)
+		RECURSE="1"
 		shift
 		;;
 	-o|--output)
@@ -37,7 +48,6 @@ esac
 done
 
 set -- "${POS[@]}" # restore positional parameters
-#printf "\nINPUT FILE:\t${INPUT_FILE}\n"
 if [[ -n $1 ]]; then echo "ERROR: Invalid option:"; tail -1 "$1"; exit 0; fi
 
 function print_help(){
@@ -45,16 +55,23 @@ function print_help(){
 	exit 0
 }
 
-function check_cmd_params(){
-	if [ ! -f $1 ]; then echo "ERROR: File not exists"; exit 0; fi
-        if [ "$1" == ""  ]; then echo "ERROR: Missing argument: path to file."; print_help; fi
-}
+#function check_cmd_params(){
+#	if [ ! -f $1 ]; then echo "ERROR: File not exists"; exit 0; fi
+#        if [ "$1" == ""  ]; then echo "ERROR: Missing argument: path to file."; print_help; fi
+#}
 
 
 if [[ $HELP ]]; then print_help; fi
 
 ## Initialize
-check_cmd_params ${INPUT_FILE}
+
+#check_cmd_params ${INPUT_FILE}
+if [[ $DIRECTORY ]];then 
+	if [ -f $TMPFILE2 ];then touch ${TMPFILE2}; else echo "">$TMPFILE2; fi
+	if [[ ! $RECURSE ]];then opts="-maxdepth 1"; fi
+	find ${DIRECTORY} ${opts} -type f  >$TMPFILE2
+	INPUT_FILE=${TMPFILE2}
+fi	
 if [ -f $TMPFILE ];then touch ${TMPFILE}; else echo "">$TMPFILE; fi
 fnList=$(< ${INPUT_FILE})
 echo "$fnList" > $TMPFILE
@@ -71,10 +88,19 @@ fi
 
 
 if [[ $JSON ]]; then
-	output='{"files_list": ['
-	while read fn; do output+="\"${fn}\",";	done <$TMPFILE
-	output=${output::-1}	
-	output+=']}'
+	if [[  $REGEX ]];then
+		printf "${output}" >$TMPFILE
+		output='{"files_list": ["'
+		sed -i -e 's/|/","/g' $TMPFILE
+		output+="$(< $TMPFILE)\"]}"
+		printf "${output}\n"
+		exit	
+	else	
+		output='{"files_list": ['
+		while read fn; do output+="\"${fn}\",";	done <$TMPFILE
+		output=${output::-1}	
+		output+=']}'
+	fi
 fi
 
 
@@ -88,5 +114,5 @@ else
 	printf "${output}\n"
 fi
 
-rm $TMPFILE
+rm $TMPFILE $TMPFILE2
 #EOF

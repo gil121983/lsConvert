@@ -1,3 +1,6 @@
-testfile_*.txt
-testfile-00.txt
-testfile-nn.txt
+test/testfile_*.txt
+test/testfile-00.txt
+test/testfile-nn.txt
+test/testdir/testfile#1.txt
+test/testdir/testing@123
+

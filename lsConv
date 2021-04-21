@@ -111,7 +111,7 @@ echo "$fnList" > $TMPFILE
 if [[ $REGEX ]]; then
 	sed -i -e 's/^/\|/' $TMPFILE
 	sed -i -e '1s/^.//' $TMPFILE
-	sed -i -e "s/[\!\@\#\$\%\^\&\(\)-\/\|\.]/\\\&/g" $TMPFILE
+	sed -i -e "s/[\!\@\#\$\%\^\&\(\)\-\/\|\.]/\\\&/g" $TMPFILE
 	sed -i -e "s/\*/.*/" $TMPFILE
 	output=$(cat $TMPFILE)
 	output="${output//$'\n'/}"
@@ -145,5 +145,6 @@ else
 	printf "${output}\n"
 fi
 
-rm $TMPFILE $TMPFILE2
+rm $TMPFILE 
+if [ -f $TMPFILE2 ]; then rm $TMPFILE2; fi
 #EOF
